@@ -16,17 +16,15 @@ type m bson.M
 func CollectStats(session *mgo.Session) (elastic.Stats, error) {
 	now := time.Now().UTC()
 	stats := elastic.Stats{
-		SchemaVersion:                   1,
-		Timestamp:                       now,
-		TotalBytesStorageUsedPerBackend: map[string]int64{},
-		FileCountPerStatus:              map[string]int{},
-		FileCountPerBackend:             map[string]int{},
+		SchemaVersion: 1,
+		Timestamp:     now,
 	}
 
 	c := collector{
 		now,
 		&stats,
 		session.DB("").C("files"),
+		session.DB("").C("projects"),
 	}
 
 	if err := c.filesExpiredLinks(); err != nil {
@@ -39,6 +37,9 @@ func CollectStats(session *mgo.Session) (elastic.Stats, error) {
 		return stats, err
 	}
 	if err := c.filesCountStatsPerStatus(); err != nil {
+		return stats, err
+	}
+	if err := c.projectsCount(); err != nil {
 		return stats, err
 	}
 
