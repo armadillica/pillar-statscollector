@@ -13,13 +13,13 @@ import (
 var cliArgs struct {
 	verbose  bool
 	debug    bool
-	MongoURL string
+	mongoURL string
 }
 
 func parseCliArgs() {
 	flag.BoolVar(&cliArgs.verbose, "verbose", false, "Enable info-level logging")
 	flag.BoolVar(&cliArgs.debug, "debug", false, "Enable debug-level logging")
-	flag.StringVar(&cliArgs.MongoURL, "mongo", "mongodb://localhost/cloud", "URL of the MongoDB database to connect to")
+	flag.StringVar(&cliArgs.mongoURL, "mongo", "mongodb://localhost/cloud", "URL of the MongoDB database to connect to")
 	flag.Parse()
 }
 
@@ -43,7 +43,7 @@ func main() {
 	configLogging()
 
 	// Connect to MongoDB
-	session, err := mgo.Dial(cliArgs.MongoURL)
+	session, err := mgo.Dial(cliArgs.mongoURL)
 	if err != nil {
 		log.Panic(err)
 	}
