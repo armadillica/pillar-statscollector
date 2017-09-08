@@ -39,6 +39,7 @@ func configLogging() {
 
 func main() {
 	parseCliArgs()
+	configLogging()
 
 	// Connect to MongoDB
 	session, err := mgo.Dial(cliArgs.MongoURL)
