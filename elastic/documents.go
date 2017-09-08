@@ -4,7 +4,13 @@ import "time"
 
 // Stats represents the JSON document pushed to ElasticSearch
 type Stats struct {
-	SchemaVersion int       `json:"schema_version"`
+	// ElasticSearch metadata; the document can be found in  /{_index}/{_type}/{_id}
+	Index   string `json:"_index,omitempty"`
+	Type    string `json:"_type,omitempty"`
+	ID      string `json:"_id,omitempty"`
+	Version int    `json:"_version,omitempty"`
+
+	SchemaVersion int       `json:"stats_schema_version"`
 	Timestamp     time.Time `json:"timestamp"`
 
 	Files struct {
