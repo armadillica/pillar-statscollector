@@ -16,11 +16,13 @@ var cliArgs struct {
 	mongoURL   string
 	elasticURL string
 	before     string
+	nopush     bool
 }
 
 func parseCliArgs() {
 	flag.BoolVar(&cliArgs.verbose, "verbose", false, "Enable info-level logging")
 	flag.BoolVar(&cliArgs.debug, "debug", false, "Enable debug-level logging")
+	flag.BoolVar(&cliArgs.nopush, "nopush", false, "Log statistics, but don't push to ElasticSearch")
 	flag.StringVar(&cliArgs.mongoURL, "mongo", "mongodb://localhost/cloud", "URL of the MongoDB database to connect to")
 	flag.StringVar(&cliArgs.elasticURL, "elastic", "http://localhost:9200/", "URL of the ElasticSearch instance to push to")
 	flag.StringVar(&cliArgs.before, "before", "", "Only consider objects created before this timestamp, expected in RFC 3339 format")
@@ -66,6 +68,10 @@ func main() {
 		log.Fatalf("Error collecting statistics: %s", err)
 	}
 
+	if cliArgs.nopush {
+		log.Warning("Not pushing to ElasticSearch")
+		return
+	}
 	if err := elastic.Push(cliArgs.elasticURL, stats); err != nil {
 		log.Fatalf("Error pushing to ElasticSearch: %s", err)
 	}
