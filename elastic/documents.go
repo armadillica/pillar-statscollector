@@ -10,6 +10,7 @@ type Stats struct {
 	Files struct {
 		ExpiredLinkCount                int              `json:"expired_link_count"`
 		NoLinkCount                     int              `json:"no_link_count"`
+		TotalBytesStorageUsed           int64            `json:"total_bytes_storage_used"`
 		TotalBytesStorageUsedPerBackend map[string]int64 `json:"total_bytes_storage_used_per_backend"`
 		FileCountTotal                  int              `json:"file_count_total"`
 		FileCountPerStatus              map[string]int   `json:"file_count_per_status"`

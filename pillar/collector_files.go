@@ -56,6 +56,7 @@ func (c *collector) filesCountStatsPerStorageBackend() error {
 	}))
 	iter := pipe.Iter()
 
+	c.stats.Files.TotalBytesStorageUsed = 0
 	c.stats.Files.TotalBytesStorageUsedPerBackend = map[string]int64{}
 	c.stats.Files.FileCountPerBackend = map[string]int{}
 
@@ -66,6 +67,7 @@ func (c *collector) filesCountStatsPerStorageBackend() error {
 		}
 		c.stats.Files.TotalBytesStorageUsedPerBackend[backend] = perBackendResult.TotalBytes
 		c.stats.Files.FileCountPerBackend[backend] = perBackendResult.Count
+		c.stats.Files.TotalBytesStorageUsed += perBackendResult.TotalBytes
 	}
 
 	return iter.Close()
