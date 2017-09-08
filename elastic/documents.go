@@ -7,7 +7,6 @@ type Stats struct {
 	SchemaVersion int       `json:"schema_version"`
 	Timestamp     time.Time `json:"timestamp"`
 
-	// File stuff
 	Files struct {
 		ExpiredLinkCount                int              `json:"expired_link_count"`
 		NoLinkCount                     int              `json:"no_link_count"`
@@ -20,7 +19,6 @@ type Stats struct {
 		// TotalOrphanFileSizeInBytes      int64            `json:"total_orphan_file_size_in_bytes"`
 	} `json:"files"`
 
-	// Project stuff
 	Projects struct {
 		PublicCount       int `json:"public_count"`
 		PrivateCount      int `json:"private_count"`
@@ -29,7 +27,6 @@ type Stats struct {
 		TotalDeletedCount int `json:"total_deleted_count"`
 	} `json:"projects"`
 
-	// Nodes stuff
 	Nodes struct {
 		PublicAssetCount   int `json:"public_asset_count"`
 		PublicCommentCount int `json:"public_comment_count"`
