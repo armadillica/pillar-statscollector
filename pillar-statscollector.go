@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"time"
 
 	"github.com/armadillica/pillar-statscollector/elastic"
 	"github.com/armadillica/pillar-statscollector/pillar"
@@ -48,7 +49,9 @@ func main() {
 	}
 	session.SetMode(mgo.Monotonic, true) // Optional. Switch the session to a monotonic behavior.
 
-	stats, err := pillar.CollectStats(session)
+	timestamp := time.Now().UTC() // TODO: take the time from the CLI?
+	// timestamp := time.Time{}.UTC()
+	stats, err := pillar.CollectStats(session, &timestamp)
 	if err != nil {
 		log.Fatalf("Error collecting statistics: %s", err)
 	}

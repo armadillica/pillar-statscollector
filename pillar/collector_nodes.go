@@ -2,6 +2,7 @@ package pillar
 
 import (
 	log "github.com/sirupsen/logrus"
+	mgo "gopkg.in/mgo.v2"
 )
 
 func (c *collector) publicNodesCount(match m) (int, error) {
@@ -9,7 +10,7 @@ func (c *collector) publicNodesCount(match m) (int, error) {
 		Total int `bson:"total"`
 	}
 
-	pipe := c.nodesColl.Pipe([]m{
+	pipe := c.nodesColl.Pipe(c.aggrPipe([]m{
 		m{"$match": notDeletedQuery},
 		m{"$match": match},
 		m{"$lookup": m{
@@ -22,7 +23,7 @@ func (c *collector) publicNodesCount(match m) (int, error) {
 		m{"$project": m{"project.is_private": 1}},
 		m{"$match": m{"project.is_private": m{"$ne": true}}},
 		m{"$count": "total"},
-	})
+	}))
 
 	err := pipe.One(&result)
 	if err != nil && err != mgo.ErrNotFound {
@@ -36,11 +37,13 @@ func (c *collector) nodesCount() error {
 	log.Info("Aggregating nodes stats")
 
 	var err error
-	if c.stats.Nodes.PublicAssetCount, err = c.publicNodesCount(m{"node_type": "asset"}); err != nil {
+	c.stats.Nodes.PublicAssetCount, err = c.publicNodesCount(m{"node_type": "asset"})
+	if err != nil {
 		return err
 	}
 
-	if c.stats.Nodes.PublicCommentCount, err = c.publicNodesCount(m{"node_type": "comment"}); err != nil {
+	c.stats.Nodes.PublicCommentCount, err = c.publicNodesCount(m{"node_type": "comment"})
+	if err != nil {
 		return err
 	}
 

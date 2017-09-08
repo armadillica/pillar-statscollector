@@ -2,6 +2,7 @@ package pillar
 
 import (
 	log "github.com/sirupsen/logrus"
+	mgo "gopkg.in/mgo.v2"
 )
 
 func (c *collector) projectsCount() error {
@@ -13,7 +14,7 @@ func (c *collector) projectsCount() error {
 		Public  int `bson:"public"`
 	}
 
-	pipe := c.projColl.Pipe([]m{
+	pipe := c.projColl.Pipe(c.aggrPipe([]m{
 		m{"$match": notDeletedQuery},
 		m{"$project": m{
 			"is_private": m{"$and": []m{
@@ -32,24 +33,29 @@ func (c *collector) projectsCount() error {
 			"public":  m{"$sum": m{"$cond": m{"if": "$is_public", "then": 1, "else": 0}}},
 			"private": m{"$sum": m{"$cond": m{"if": "$is_private", "then": 1, "else": 0}}},
 		}},
-	})
+	}))
 
-	if err := pipe.One(&result); err != nil {
+	var err error
+	err = pipe.One(&result)
+	if err != nil && err != mgo.ErrNotFound {
 		return err
 	}
-
-	c.stats.Projects.PublicCount = result.Public
-	c.stats.Projects.PrivateCount = result.Private
-	c.stats.Projects.HomeProjectCount = result.Home
+	if err == nil {
+		c.stats.Projects.PublicCount = result.Public
+		c.stats.Projects.PrivateCount = result.Private
+		c.stats.Projects.HomeProjectCount = result.Home
+	}
 
 	// Do a separate count to ensure we get a correct total, even in the face of small mistakes in
 	// the aggregation query.
-	var err error
-	c.stats.Projects.TotalCount, err = c.projColl.Find(notDeletedQuery).Count()
-	if err != nil {
+	c.stats.Projects.TotalCount, err = c.projColl.Find(c.notDeletedQuery()).Count()
+	if err != nil && err != mgo.ErrNotFound {
 		return err
 	}
 
-	c.stats.Projects.TotalDeletedCount, err = c.projColl.Find(m{"_deleted": true}).Count()
+	c.stats.Projects.TotalDeletedCount, err = c.projColl.Find(c.query(m{"_deleted": true})).Count()
+	if err == mgo.ErrNotFound {
+		return nil
+	}
 	return err
 }

@@ -8,7 +8,7 @@ func (c *collector) filesTotalCount() error {
 	var err error
 
 	log.Info("Counting files")
-	c.stats.Files.FileCountTotal, err = c.filesColl.Count()
+	c.stats.Files.FileCountTotal, err = c.filesColl.Find(c.emptyQuery()).Count()
 
 	return err
 }
@@ -17,7 +17,9 @@ func (c *collector) filesExpiredLinks() error {
 	var err error
 
 	log.Info("Counting files with expired links")
-	c.stats.Files.ExpiredLinkCount, err = c.filesColl.Find(m{"link_expires": m{"$lt": c.now}}).Count()
+	c.stats.Files.ExpiredLinkCount, err = c.filesColl.Find(c.query(
+		m{"link_expires": m{"$lt": c.now}},
+	)).Count()
 
 	return err
 }
@@ -26,12 +28,12 @@ func (c *collector) filesEmptyLinks() error {
 	var err error
 
 	log.Info("Counting files with nil/empty links")
-	c.stats.Files.NoLinkCount, err = c.filesColl.Find(
+	c.stats.Files.NoLinkCount, err = c.filesColl.Find(c.query(
 		m{"$or": []m{
 			m{"link": nil},
 			m{"link": m{"$exists": false}},
 			m{"link": ""},
-		}}).Count()
+		}})).Count()
 
 	return err
 }
@@ -45,13 +47,13 @@ func (c *collector) filesCountStatsPerStorageBackend() error {
 		TotalBytes int64  `bson:"total_bytes"`
 	}
 
-	pipe := c.filesColl.Pipe([]m{
+	pipe := c.filesColl.Pipe(c.aggrPipe([]m{
 		m{"$group": m{
 			"_id":         "$backend",
 			"count":       m{"$sum": 1},
 			"total_bytes": m{"$sum": "$length_aggregate_in_bytes"},
 		}},
-	})
+	}))
 	iter := pipe.Iter()
 
 	c.stats.Files.TotalBytesStorageUsedPerBackend = map[string]int64{}
@@ -74,12 +76,12 @@ func (c *collector) filesCountStatsPerStatus() error {
 		Count  int    `bson:"count"`
 	}
 
-	pipe := c.filesColl.Pipe([]m{
+	pipe := c.filesColl.Pipe(c.aggrPipe([]m{
 		m{"$group": m{
 			"_id":   "$status",
 			"count": m{"$sum": 1},
 		}},
-	})
+	}))
 	iter := pipe.Iter()
 
 	c.stats.Files.FileCountPerStatus = map[string]int{}
