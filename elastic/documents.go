@@ -29,8 +29,8 @@ type Stats struct {
 	} `json:"projects"`
 
 	Nodes struct {
-		PublicAssetCount   int `json:"public_asset_count"`
-		PublicCommentCount int `json:"public_comment_count"`
+		PublicCountPerNodeType map[string]int `json:"public_node_count_per_type"`
+		TotalPublicNodeCount   int            `json:"total_public_node_count"`
 	} `json:"nodes"`
 
 	Users struct {
