@@ -15,6 +15,7 @@ var cliArgs struct {
 	debug      bool
 	mongoURL   string
 	elasticURL string
+	before     string
 }
 
 func parseCliArgs() {
@@ -22,6 +23,7 @@ func parseCliArgs() {
 	flag.BoolVar(&cliArgs.debug, "debug", false, "Enable debug-level logging")
 	flag.StringVar(&cliArgs.mongoURL, "mongo", "mongodb://localhost/cloud", "URL of the MongoDB database to connect to")
 	flag.StringVar(&cliArgs.elasticURL, "elastic", "http://localhost:9200/", "URL of the ElasticSearch instance to push to")
+	flag.StringVar(&cliArgs.before, "before", "", "Only consider objects created before this timestamp, expected in RFC 3339 format")
 	flag.Parse()
 }
 
@@ -51,9 +53,15 @@ func main() {
 	}
 	session.SetMode(mgo.Monotonic, true) // Optional. Switch the session to a monotonic behavior.
 
-	timestamp := time.Now().UTC() // TODO: take the time from the CLI?
-	// timestamp := time.Time{}.UTC()
-	stats, err := pillar.CollectStats(session, &timestamp)
+	var timestamp *time.Time
+	if cliArgs.before != "" {
+		parsed, parseErr := time.Parse(time.RFC3339, cliArgs.before)
+		if parseErr != nil {
+			log.Fatalf("Invalid argument -before %q: %s", cliArgs.before, parseErr)
+		}
+		timestamp = &parsed
+	}
+	stats, err := pillar.CollectStats(session, timestamp)
 	if err != nil {
 		log.Fatalf("Error collecting statistics: %s", err)
 	}
