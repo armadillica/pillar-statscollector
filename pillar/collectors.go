@@ -54,27 +54,27 @@ func CollectStats(session *mgo.Session, before *time.Time) (elastic.Stats, error
 	}
 
 	if err := c.filesTotalCount(); err != nil {
-		return stats, err
+		return stats, fmt.Errorf("filesTotalCount: %s", err)
 	}
 	if err := c.filesExpiredLinks(); err != nil {
-		return stats, err
+		return stats, fmt.Errorf("filesExpiredLinks: %s", err)
 	}
 	if err := c.filesEmptyLinks(); err != nil {
-		return stats, err
+		return stats, fmt.Errorf("filesEmptyLinks: %s", err)
 	}
 	if err := c.filesCountStatsPerStorageBackend(); err != nil {
-		return stats, err
+		return stats, fmt.Errorf("filesCountStatsPerStorageBackend: %s", err)
 	}
 	if err := c.filesCountStatsPerStatus(); err != nil {
-		return stats, err
+		return stats, fmt.Errorf("filesCountStatsPerStatus: %s", err)
 	}
 
 	if err := c.projectsCount(); err != nil {
-		return stats, err
+		return stats, fmt.Errorf("projectsCount: %s", err)
 	}
 
 	if err := c.nodesCount(); err != nil {
-		return stats, err
+		return stats, fmt.Errorf("nodesCount: %s", err)
 	}
 
 	// Done!
