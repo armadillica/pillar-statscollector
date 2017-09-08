@@ -13,6 +13,7 @@ type collector struct {
 	stats     *elastic.Stats
 	filesColl *mgo.Collection
 	projColl  *mgo.Collection
+	nodesColl *mgo.Collection
 }
 
 type m bson.M

@@ -28,4 +28,10 @@ type Stats struct {
 		TotalCount        int `json:"total_count"`
 		TotalDeletedCount int `json:"total_deleted_count"`
 	} `json:"projects"`
+
+	// Nodes stuff
+	Nodes struct {
+		PublicAssetCount   int `json:"public_asset_count"`
+		PublicCommentCount int `json:"public_comment_count"`
+	} `json:"nodes"`
 }

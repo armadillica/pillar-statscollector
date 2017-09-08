@@ -22,6 +22,7 @@ func CollectStats(session *mgo.Session) (elastic.Stats, error) {
 		&stats,
 		session.DB("").C("files"),
 		session.DB("").C("projects"),
+		session.DB("").C("nodes"),
 	}
 
 	if err := c.filesTotalCount(); err != nil {
@@ -39,7 +40,12 @@ func CollectStats(session *mgo.Session) (elastic.Stats, error) {
 	if err := c.filesCountStatsPerStatus(); err != nil {
 		return stats, err
 	}
+
 	if err := c.projectsCount(); err != nil {
+		return stats, err
+	}
+
+	if err := c.nodesCount(); err != nil {
 		return stats, err
 	}
 
