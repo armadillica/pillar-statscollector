@@ -24,6 +24,8 @@ type collector struct {
 
 var notDeletedQuery = m{"_deleted": m{"$ne": true}}
 
+const noValueString = "-none-" // Used to prevent empty keys in maps.
+
 // collector methods are defined in the collector_xxx.go files.
 
 // CollectStats collects all the statistics and returns it as elastic.Stats object.

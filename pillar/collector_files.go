@@ -62,7 +62,7 @@ func (c *collector) filesCountStatsPerStorageBackend() error {
 	for iter.Next(&perBackendResult) {
 		backend := perBackendResult.Backend
 		if backend == "" {
-			backend = "-none-"
+			backend = noValueString
 		}
 		c.stats.Files.TotalBytesStorageUsedPerBackend[backend] = perBackendResult.TotalBytes
 		c.stats.Files.FileCountPerBackend[backend] = perBackendResult.Count
@@ -92,7 +92,7 @@ func (c *collector) filesCountStatsPerStatus() error {
 	for iter.Next(&perStatusResult) {
 		status := perStatusResult.Status
 		if status == "" {
-			status = "-none-"
+			status = noValueString
 		}
 		c.stats.Files.FileCountPerStatus[status] = perStatusResult.Count
 	}
