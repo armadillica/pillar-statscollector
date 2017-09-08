@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"time"
 
@@ -69,6 +70,12 @@ func main() {
 	}
 
 	if cliArgs.nopush {
+		// Marshal the stats to JSON and log.
+		asJSON, err := json.MarshalIndent(&stats, "", "    ")
+		if err != nil {
+			log.Errorf("unable to marshal to JSON: %s", err)
+		}
+		log.Infof("Statistics:\n%s\n", string(asJSON))
 		log.Warning("Not pushing to ElasticSearch")
 		return
 	}
