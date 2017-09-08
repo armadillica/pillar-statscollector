@@ -110,15 +110,6 @@ func (c *collector) projectsCount() error {
 		Home    int `bson:"home"`
 		Public  int `bson:"public"`
 	}
-	// project:
-	// is_private: {$and: [{$eq: ["$is_private", true]}, {$ne: ["$category", "home"]}]},
-	// is_home: {$eq: ["$category", "home"]},
-	// is_public: {$and: [{$eq: ["$is_private", false]}, {$ne: ["$category", "home"]}]},
-	// group:
-	// _id: null,
-	// home: {$sum: {$cond: {if: "$is_home", then: 1, else: 0}}},
-	// public: {$sum: {$cond: {if: "$is_public", then: 1, else: 0}}},
-	// private: {$sum: {$cond: {if: "$is_private", then: 1, else: 0}}},
 
 	pipe := c.projColl.Pipe([]m{
 		m{"$project": m{
