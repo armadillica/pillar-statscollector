@@ -19,6 +19,7 @@ type collector struct {
 	filesColl  *mgo.Collection
 	projColl   *mgo.Collection
 	nodesColl  *mgo.Collection
+	usersColl  *mgo.Collection
 }
 
 var notDeletedQuery = m{"_deleted": m{"$ne": true}}
@@ -51,6 +52,7 @@ func CollectStats(session *mgo.Session, before *time.Time) (elastic.Stats, error
 		session.DB("").C("files"),
 		session.DB("").C("projects"),
 		session.DB("").C("nodes"),
+		session.DB("").C("users"),
 	}
 
 	if err := c.filesTotalCount(); err != nil {
@@ -75,6 +77,13 @@ func CollectStats(session *mgo.Session, before *time.Time) (elastic.Stats, error
 
 	if err := c.nodesCount(); err != nil {
 		return stats, fmt.Errorf("nodesCount: %s", err)
+	}
+
+	if err := c.usersCount(); err != nil {
+		return stats, fmt.Errorf("usersCount: %s", err)
+	}
+	if err := c.countBlenderSyncUsers(); err != nil {
+		return stats, fmt.Errorf("countBlenderSyncUsers: %s", err)
 	}
 
 	// Done!

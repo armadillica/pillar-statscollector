@@ -31,4 +31,11 @@ type Stats struct {
 		PublicAssetCount   int `json:"public_asset_count"`
 		PublicCommentCount int `json:"public_comment_count"`
 	} `json:"nodes"`
+
+	Users struct {
+		TotalCount         int            `json:"total_user_count"`
+		TotalRealUserCount int            `json:"total_real_user_count"`
+		CountPerType       map[string]int `json:"count_per_type"`
+		BlenderSyncCount   int            `json:"blender_sync_count"`
+	} `json:"users"`
 }
