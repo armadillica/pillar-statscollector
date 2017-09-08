@@ -11,15 +11,17 @@ import (
 )
 
 var cliArgs struct {
-	verbose  bool
-	debug    bool
-	mongoURL string
+	verbose    bool
+	debug      bool
+	mongoURL   string
+	elasticURL string
 }
 
 func parseCliArgs() {
 	flag.BoolVar(&cliArgs.verbose, "verbose", false, "Enable info-level logging")
 	flag.BoolVar(&cliArgs.debug, "debug", false, "Enable debug-level logging")
 	flag.StringVar(&cliArgs.mongoURL, "mongo", "mongodb://localhost/cloud", "URL of the MongoDB database to connect to")
+	flag.StringVar(&cliArgs.elasticURL, "elastic", "http://localhost:9200/", "URL of the ElasticSearch instance to push to")
 	flag.Parse()
 }
 
@@ -56,7 +58,7 @@ func main() {
 		log.Fatalf("Error collecting statistics: %s", err)
 	}
 
-	if err := elastic.Push(stats); err != nil {
+	if err := elastic.Push(cliArgs.elasticURL, stats); err != nil {
 		log.Fatalf("Error pushing to ElasticSearch: %s", err)
 	}
 }

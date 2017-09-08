@@ -39,3 +39,11 @@ type Stats struct {
 		BlenderSyncCount   int            `json:"blender_sync_count"`
 	} `json:"users"`
 }
+
+type postResponse struct {
+	Index   string `json:"_index"`
+	Type    string `json:"_type"`
+	ID      string `json:"_id"`
+	Version int    `json:"_version"`
+	Created bool   `json:"created"`
+}
