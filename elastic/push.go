@@ -82,13 +82,6 @@ func Push(elasticURL string, stats Stats) error {
 		return fmt.Errorf("invalid URL: %s", err)
 	}
 
-	// Marshal the stats to JSON and log, but only if the output is a terminal.
-	asJSON, err := json.MarshalIndent(&stats, "", "    ")
-	if err != nil {
-		return fmt.Errorf("unable to marshal to JSON: %s", err)
-	}
-	log.Infof("Statistics:\n%s\n", string(asJSON))
-
 	handleResponse := func(resp *http.Response, body []byte) error {
 		var response postResponse
 		if decodeErr := json.Unmarshal(body, &response); decodeErr != nil {
