@@ -27,6 +27,9 @@ func CollectStats(session *mgo.Session) (elastic.Stats, error) {
 		session.DB("").C("projects"),
 	}
 
+	if err := c.filesTotalCount(); err != nil {
+		return stats, err
+	}
 	if err := c.filesExpiredLinks(); err != nil {
 		return stats, err
 	}

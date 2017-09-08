@@ -12,6 +12,7 @@ type Stats struct {
 		ExpiredLinkCount                int              `json:"expired_link_count"`
 		NoLinkCount                     int              `json:"no_link_count"`
 		TotalBytesStorageUsedPerBackend map[string]int64 `json:"total_bytes_storage_used_per_backend"`
+		FileCountTotal                  int              `json:"file_count_total"`
 		FileCountPerStatus              map[string]int   `json:"file_count_per_status"`
 		FileCountPerBackend             map[string]int   `json:"file_count_per_backend"`
 		// These I really, really want to get in there, but require much more extensive querying.

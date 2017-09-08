@@ -15,6 +15,15 @@ type collector struct {
 	projColl  *mgo.Collection
 }
 
+func (c *collector) filesTotalCount() error {
+	var err error
+
+	log.Info("Counting files")
+	c.stats.Files.FileCountTotal, err = c.filesColl.Count()
+
+	return err
+}
+
 func (c *collector) filesExpiredLinks() error {
 	var err error
 
