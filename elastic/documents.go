@@ -22,9 +22,10 @@ type Stats struct {
 
 	// Project stuff
 	Projects struct {
-		PublicCount      int `json:"public_count"`
-		PrivateCount     int `json:"private_count"`
-		HomeProjectCount int `json:"home_project_count"`
-		TotalCount       int `json:"total_count"`
+		PublicCount       int `json:"public_count"`
+		PrivateCount      int `json:"private_count"`
+		HomeProjectCount  int `json:"home_project_count"`
+		TotalCount        int `json:"total_count"`
+		TotalDeletedCount int `json:"total_deleted_count"`
 	} `json:"projects"`
 }

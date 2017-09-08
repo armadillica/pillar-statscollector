@@ -14,6 +14,7 @@ func (c *collector) projectsCount() error {
 	}
 
 	pipe := c.projColl.Pipe([]m{
+		m{"$match": notDeletedQuery},
 		m{"$project": m{
 			"is_private": m{"$and": []m{
 				m{"$eq": []interface{}{"$is_private", true}},
@@ -44,6 +45,11 @@ func (c *collector) projectsCount() error {
 	// Do a separate count to ensure we get a correct total, even in the face of small mistakes in
 	// the aggregation query.
 	var err error
-	c.stats.Projects.TotalCount, err = c.projColl.Count()
+	c.stats.Projects.TotalCount, err = c.projColl.Find(notDeletedQuery).Count()
+	if err != nil {
+		return err
+	}
+
+	c.stats.Projects.TotalDeletedCount, err = c.projColl.Find(m{"_deleted": true}).Count()
 	return err
 }

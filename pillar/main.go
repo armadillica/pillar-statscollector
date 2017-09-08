@@ -5,12 +5,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	mgo "gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 
 	"github.com/armadillica/pillar-statscollector/elastic"
 )
-
-type m bson.M
 
 // CollectStats collects all the statistics and returns it as elastic.Stats object.
 func CollectStats(session *mgo.Session) (elastic.Stats, error) {
