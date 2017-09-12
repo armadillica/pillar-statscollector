@@ -57,6 +57,13 @@ func CollectStats(session *mgo.Session, before *time.Time) (elastic.Stats, error
 		session.DB("").C("users"),
 	}
 
+	// Collect subscribers in another goroutine, because it needs to do an HTTP call.
+	storeDone := make(chan error)
+	go func() {
+		subsErr := c.countSubscriptions("https://store.blender.org/product-counter/?prod=cloud")
+		storeDone <- subsErr
+	}()
+
 	if err := c.filesTotalCount(); err != nil {
 		return stats, fmt.Errorf("filesTotalCount: %s", err)
 	}
@@ -87,7 +94,9 @@ func CollectStats(session *mgo.Session, before *time.Time) (elastic.Stats, error
 	if err := c.countBlenderSyncUsers(); err != nil {
 		return stats, fmt.Errorf("countBlenderSyncUsers: %s", err)
 	}
-	if err := c.countSubscriptions("https://store.blender.org/product-counter/?prod=cloud"); err != nil {
+
+	// Wait for the subscription count to be done.
+	if err := <-storeDone; err != nil {
 		return stats, fmt.Errorf("countSubscriptions: %s", err)
 	}
 
