@@ -12,7 +12,7 @@ func (c *collector) nodesCount() error {
 
 	query := c.aggrPipe([]m{
 		// Only inspect public projects.
-		m{"$match": m{"is_private": m{"$ne": true}}},
+		m{"$match": m{"is_private": false}},
 		// Find all nodes for these projects.
 		m{"$lookup": m{
 			"from":         "nodes",
