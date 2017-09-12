@@ -71,7 +71,7 @@ func sendJSON(logprefix, method string, url *url.URL,
 }
 
 // Push sends the give stats object to ElasticSearch for storage.
-func Push(elasticURL string, stats Stats) error {
+func Push(elasticURL string, stats interface{}) error {
 	// Figure out the URL to POST to.
 	serverURL, err := url.Parse(elasticURL)
 	if err != nil {
@@ -102,7 +102,7 @@ func Push(elasticURL string, stats Stats) error {
 	}
 
 	log.Infof("Pushing to ElasticSearch at %s", postURL)
-	err = sendJSON("stats push: ", "POST", postURL, &stats, nil, handleResponse)
+	err = sendJSON("stats push: ", "POST", postURL, stats, nil, handleResponse)
 	if err != nil {
 		return fmt.Errorf("unable to send JSON: %s", err)
 	}

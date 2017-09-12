@@ -41,6 +41,23 @@ type Stats struct {
 	} `json:"users"`
 }
 
+// GrafistaStats represents the JSON document pushed to ElasticSearch as fetched from Grafista.
+// It contains historical data from a subset of the full set of stats described above.
+type GrafistaStats struct {
+	SchemaVersion int       `json:"stats_schema_version"`
+	Timestamp     time.Time `json:"timestamp"`
+
+	Nodes struct {
+		PublicCountPerNodeType map[string]int `json:"public_node_count_per_type"`
+	} `json:"nodes"`
+
+	Users struct {
+		TotalCount       int            `json:"total_user_count"`
+		CountPerType     map[string]int `json:"count_per_type"`
+		BlenderSyncCount int            `json:"blender_sync_count"`
+	} `json:"users"`
+}
+
 type postResponse struct {
 	Index   string `json:"_index"`
 	Type    string `json:"_type"`
