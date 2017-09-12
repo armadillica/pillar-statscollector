@@ -1,6 +1,10 @@
 package pillar
 
 import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+
 	log "github.com/sirupsen/logrus"
 	mgo "gopkg.in/mgo.v2"
 )
@@ -91,5 +95,29 @@ func (c *collector) countBlenderSyncUsers() error {
 	}
 
 	c.stats.Users.BlenderSyncCount = result.Total
+	return nil
+}
+
+// Connects to Blender Store to fetch the current number of subscriptions.
+func (c *collector) countSubscriptions(storeURL string) error {
+	log.Infof("Connecting to %s", storeURL)
+
+	resp, err := http.Get(storeURL)
+	if err != nil {
+		return fmt.Errorf("error getting Blender Store stats: %s", err)
+	}
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("error %d getting Blender Store stats", resp.StatusCode)
+	}
+
+	var storeData struct {
+		Total int `json:"total_sold"`
+	}
+	decoder := json.NewDecoder(resp.Body)
+	if err := decoder.Decode(&storeData); err != nil {
+		return fmt.Errorf("error decoding response from store: %s", err)
+	}
+
+	c.stats.Users.SubscriberCount = storeData.Total
 	return nil
 }

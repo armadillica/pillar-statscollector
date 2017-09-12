@@ -38,6 +38,7 @@ type Stats struct {
 		TotalRealUserCount int            `json:"total_real_user_count"`
 		CountPerType       map[string]int `json:"count_per_type"`
 		BlenderSyncCount   int            `json:"blender_sync_count"`
+		SubscriberCount    int            `json:"subscriber_count"`
 	} `json:"users"`
 }
 
