@@ -41,7 +41,7 @@ func ImportDB(filename string, pushToElastic PushStatsFunc) error {
 		timestamp    time.Time
 		seriesName   string
 		sampleValue  int
-		statsDoc     elastic.GrafistaStats = createEmptyStatsDoc()
+		statsDoc     = createEmptyStatsDoc()
 	)
 
 	for rows.Next() {
@@ -55,7 +55,7 @@ func ImportDB(filename string, pushToElastic PushStatsFunc) error {
 		}
 
 		if timestamp != statsDoc.Timestamp {
-			log.Infof("Stats complete, pushing to ElasticSearch: %v", statsDoc)
+			log.Infof("Stats for %s complete, pushing to ElasticSearch: %v", statsDoc.Timestamp, statsDoc)
 			if pushErr := pushToElastic(statsDoc); pushErr != nil {
 				return fmt.Errorf("unable to push to Elastic: %s", pushErr)
 			}
@@ -88,6 +88,7 @@ func ImportDB(filename string, pushToElastic PushStatsFunc) error {
 	}
 
 	// Push the final document
+	log.Infof("Stats for %s complete, pushing to ElasticSearch: %v", statsDoc.Timestamp, statsDoc)
 	if pushErr := pushToElastic(statsDoc); pushErr != nil {
 		return fmt.Errorf("unable to push to Elastic: %s", pushErr)
 	}

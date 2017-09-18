@@ -53,9 +53,9 @@ type GrafistaStats struct {
 	} `json:"nodes"`
 
 	Users struct {
-		TotalCount       int `json:"total_user_count"`
-		BlenderSyncCount int `json:"blender_sync_count"`
-		SubscriberCount  int `json:"subscriber_count"`
+		TotalCount       int `json:"total_user_count,omitempty"`
+		BlenderSyncCount int `json:"blender_sync_count,omitempty"`
+		SubscriberCount  int `json:"subscriber_count,omitempty"`
 	} `json:"users"`
 }
 
