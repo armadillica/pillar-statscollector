@@ -18,7 +18,6 @@ func createEmptyStatsDoc() elastic.GrafistaStats {
 		SchemaVersion: 1,
 	}
 	statsDoc.Nodes.PublicCountPerNodeType = map[string]int{}
-	statsDoc.Users.CountPerType = map[string]int{}
 	return statsDoc
 }
 
@@ -75,7 +74,7 @@ func ImportDB(filename string, pushToElastic PushStatsFunc) error {
 			statsDoc.Nodes.PublicCountPerNodeType["comment"] = sampleValue
 			break
 		case "total_sold":
-			statsDoc.Users.CountPerType["subscriber"] = sampleValue
+			statsDoc.Users.SubscriberCount = sampleValue
 			break
 		case "users_total":
 			statsDoc.Users.TotalCount = sampleValue
