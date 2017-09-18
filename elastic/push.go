@@ -73,11 +73,7 @@ func sendJSON(logprefix, method string, url *url.URL,
 // Push sends the give stats object to ElasticSearch for storage.
 func Push(elasticURL string, stats interface{}) error {
 	// Figure out the URL to POST to.
-	serverURL, err := url.Parse(elasticURL)
-	if err != nil {
-		return fmt.Errorf("invalid URL: %s", err)
-	}
-	postURL, err := serverURL.Parse("/cloud/stats/")
+	postURL, err := url.Parse(elasticURL)
 	if err != nil {
 		return fmt.Errorf("invalid URL: %s", err)
 	}
@@ -91,13 +87,13 @@ func Push(elasticURL string, stats interface{}) error {
 
 		// Parse the Location header from the response.
 		location := resp.Header.Get("Location")
-		absURL, urlErr := serverURL.Parse(location)
-		if urlErr == nil {
-			log.Infof("Location: %s", absURL.String())
-		} else {
+		locURL, urlErr := url.Parse(location)
+		if urlErr != nil {
 			log.Warningf("Unable to determine absolute URL for location %s", location)
+		} else {
+			absURL := postURL.ResolveReference(locURL)
+			log.Infof("Location: %s", absURL.String())
 		}
-
 		return nil
 	}
 

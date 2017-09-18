@@ -33,7 +33,7 @@ func parseCliArgs() {
 	flag.BoolVar(&cliArgs.debug, "debug", false, "Enable debug-level logging.")
 	flag.BoolVar(&cliArgs.nopush, "nopush", false, "Log statistics, but don't push to ElasticSearch.")
 	flag.StringVar(&cliArgs.mongoURL, "mongo", "mongodb://localhost/cloud", "URL of the MongoDB database to connect to.")
-	flag.StringVar(&cliArgs.elasticURL, "elastic", "http://localhost:9200/", "URL of the ElasticSearch instance to push to.")
+	flag.StringVar(&cliArgs.elasticURL, "elastic", "http://localhost:9200/cloudstats/stats/", "URL of the ElasticSearch instance to push to.")
 	flag.StringVar(&cliArgs.before, "before", "", "Only consider objects created before this timestamp; expected in RFC 3339 format.")
 	flag.StringVar(&cliArgs.allSince, "allsince", "", "Collect daily statistics since this timestamp until now; expected in RFC 3339 format.")
 	flag.StringVar(&cliArgs.importGrafista, "import", "", "Imports data from a Grafista SQLite database and pushes stats to ElasticSearch.")
