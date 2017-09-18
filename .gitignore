@@ -1,2 +1,4 @@
 # Just so we can have a grafista file to toy around with.
 /*.sqlite
+/docker/VERSION.txt
+/docker/pillar-statscollector
