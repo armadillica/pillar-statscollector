@@ -3,7 +3,10 @@
 HASH=$(git show-ref --head --hash HEAD | head -n1)
 BUILDDATE=$(date --rfc-3339=date)
 
+source _version.sh
+
 cat > VERSION.txt <<EOT
+Application version: ${STATSCOLLECTOR_VERSION}
 Git revision: ${HASH}
 Built on: ${BUILDDATE}
 EOT
@@ -15,5 +18,6 @@ cp -a $GOPATH/bin/pillar-statscollector .
 strip pillar-statscollector
 
 # Use the executable to build our Docker image.
-docker build -t armadillica/pillar-statscollector:${HASH} .
-docker tag armadillica/pillar-statscollector:${HASH} armadillica/pillar-statscollector:latest
+docker build -t armadillica/pillar-statscollector:${STATSCOLLECTOR_VERSION} .
+docker tag armadillica/pillar-statscollector:${STATSCOLLECTOR_VERSION} armadillica/pillar-statscollector:latest
+echo "Successfully tagged armadillica/pillar-statscollector:latest"

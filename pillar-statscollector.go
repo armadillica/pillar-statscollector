@@ -13,7 +13,10 @@ import (
 	mgo "gopkg.in/mgo.v2"
 )
 
+const statscollectorVersion = "1.0.0"
+
 var cliArgs struct {
+	version        bool
 	verbose        bool
 	debug          bool
 	mongoURL       string
@@ -25,6 +28,7 @@ var cliArgs struct {
 }
 
 func parseCliArgs() {
+	flag.BoolVar(&cliArgs.version, "version", false, "Shows the application version, then exits.")
 	flag.BoolVar(&cliArgs.verbose, "verbose", false, "Enable info-level logging.")
 	flag.BoolVar(&cliArgs.debug, "debug", false, "Enable debug-level logging.")
 	flag.BoolVar(&cliArgs.nopush, "nopush", false, "Log statistics, but don't push to ElasticSearch.")
@@ -112,6 +116,11 @@ func pushStats(stats interface{}) error {
 
 func main() {
 	parseCliArgs()
+	if cliArgs.version {
+		fmt.Println(statscollectorVersion)
+		return
+	}
+
 	configLogging()
 
 	if cliArgs.importGrafista != "" {
