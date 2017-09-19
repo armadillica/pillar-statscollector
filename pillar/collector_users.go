@@ -110,9 +110,7 @@ func (c *collector) countSubscriptions(storeURL string) error {
 		return fmt.Errorf("error %d getting Blender Store stats", resp.StatusCode)
 	}
 
-	var storeData struct {
-		Total int `json:"total_sold"`
-	}
+	var storeData storeResponse
 	decoder := json.NewDecoder(resp.Body)
 	if err := decoder.Decode(&storeData); err != nil {
 		return fmt.Errorf("error decoding response from store: %s", err)

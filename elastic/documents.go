@@ -38,7 +38,11 @@ type Stats struct {
 		TotalRealUserCount int            `json:"total_real_user_count"`
 		CountPerType       map[string]int `json:"count_per_type"`
 		BlenderSyncCount   int            `json:"blender_sync_count"`
-		SubscriberCount    int            `json:"subscriber_count"`
+
+		// SubscriberCount comes from the Store, which can be unreachable at times. Rather than
+		// passing an explicit count of 0 to ElasticSearch, it's better to omit the key completely
+		// and deal with it as missing data.
+		SubscriberCount int `json:"subscriber_count,omitempty"`
 	} `json:"users"`
 }
 

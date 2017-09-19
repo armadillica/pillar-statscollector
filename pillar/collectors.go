@@ -97,7 +97,7 @@ func CollectStats(session *mgo.Session, before *time.Time) (elastic.Stats, error
 
 	// Wait for the subscription count to be done.
 	if err := <-storeDone; err != nil {
-		return stats, fmt.Errorf("countSubscriptions: %s", err)
+		log.Warningf("Ignoring error from store: %s", err)
 	}
 
 	// Done!
