@@ -38,7 +38,7 @@ fi
 echo "press [ENTER] to continue, Ctrl+C to abort."
 read dummy
 
-rsync -e "$SSH" --progress -va $GOPATH/bin/pillar-statscollector ${DEPLOYHOST}:${REMOTE_HOME}/pillar-statscollector
+rsync -e "$SSH" --progress -vutp $GOPATH/bin/pillar-statscollector ${DEPLOYHOST}:${REMOTE_HOME}/pillar-statscollector
 
 echo
 echo "Pillar-Statscollector version $VERSION deployed"
