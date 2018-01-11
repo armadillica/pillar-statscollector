@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/armadillica/pillar-statscollector/elastic"
-	"github.com/armadillica/pillar-statscollector/grafista"
 	"github.com/armadillica/pillar-statscollector/mongo"
 	"github.com/armadillica/pillar-statscollector/pillar"
 	log "github.com/sirupsen/logrus"
@@ -26,7 +25,6 @@ var cliArgs struct {
 	before          string
 	nopush          bool
 	allSince        string
-	importGrafista  string
 	reverseToMongo  bool
 	reindex         bool
 }
@@ -41,7 +39,6 @@ func parseCliArgs() {
 	flag.StringVar(&cliArgs.elasticURL, "elastic", "http://localhost:9200/cloudstats/stats/", "URL of the ElasticSearch instance to push to.")
 	flag.StringVar(&cliArgs.before, "before", "", "Only consider objects created before this timestamp; expected in RFC 3339 format.")
 	flag.StringVar(&cliArgs.allSince, "allsince", "", "Collect daily statistics since this timestamp until now; expected in RFC 3339 format.")
-	flag.StringVar(&cliArgs.importGrafista, "import", "", "Imports data from a Grafista SQLite database and pushes stats to ElasticSearch.")
 	flag.BoolVar(&cliArgs.reverseToMongo, "reverse", false, "Query ElasticSearch and store data in MongoDB, which is the reverse of normal operations.")
 	flag.BoolVar(&cliArgs.reindex, "reindex", false, "Reindex ElasticSearch from data stored in MongoDB.")
 	flag.Parse()
@@ -97,17 +94,6 @@ func singleRun(session *mgo.Session, timestamp *time.Time) error {
 	}
 
 	return pushStats(session, stats)
-}
-
-func importFromGrafista(session *mgo.Session, dbFilename string) error {
-	push := func(stats interface{}) error {
-		return pushStats(session, stats)
-	}
-	err := grafista.ImportDB(cliArgs.importGrafista, push)
-	if err != nil {
-		return fmt.Errorf("error importing from Grafista DB: %s", err)
-	}
-	return nil
 }
 
 func importFromElastic(mgoWrite *mgo.Session) error {
@@ -196,15 +182,6 @@ func main() {
 	configLogging()
 	mgoCloud, mgoStats := connectMongoDB()
 
-	var err error
-	if cliArgs.importGrafista != "" {
-		err = importFromGrafista(mgoCloud, cliArgs.importGrafista)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return
-	}
-
 	if cliArgs.reverseToMongo && cliArgs.reindex {
 		log.Fatal("-reverse and -reindex are mutually exclusive")
 	}
@@ -219,6 +196,7 @@ func main() {
 		return
 	}
 
+	var err error
 	if cliArgs.allSince != "" {
 		if cliArgs.before != "" {
 			log.Fatalf("Use either -before or -allsince, not both.")
