@@ -31,6 +31,7 @@ func (s *CollectorsUsersTestSuite) SetUpTest(c *check.C) {
 
 func (s *CollectorsUsersTestSuite) TearDownTest(c *check.C) {
 	log.Info("SchedulerTestSuite tearing down test, dropping database.")
+	s.session.DB("").DropDatabase()
 	httpmock.DeactivateAndReset()
 }
 

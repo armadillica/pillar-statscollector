@@ -27,6 +27,7 @@ var cliArgs struct {
 	allSince        string
 	reverseToMongo  bool
 	reindex         bool
+	resetIndex      bool
 }
 
 func parseCliArgs() {
@@ -41,6 +42,7 @@ func parseCliArgs() {
 	flag.StringVar(&cliArgs.allSince, "allsince", "", "Collect daily statistics since this timestamp until now; expected in RFC 3339 format.")
 	flag.BoolVar(&cliArgs.reverseToMongo, "reverse", false, "Query ElasticSearch and store data in MongoDB, which is the reverse of normal operations.")
 	flag.BoolVar(&cliArgs.reindex, "reindex", false, "Reindex ElasticSearch from data stored in MongoDB.")
+	flag.BoolVar(&cliArgs.resetIndex, "reset", false, "Reset the ElasticSearch index (i.e. erase all data in there).")
 	flag.Parse()
 
 	if cliArgs.mongoStorageURL == "" {
@@ -101,7 +103,7 @@ func importFromElastic(mgoWrite *mgo.Session) error {
 	return nil
 }
 
-func pushStats(session *mgo.Session, stats interface{}) error {
+func pushStats(session *mgo.Session, stats elastic.Stats) error {
 	if cliArgs.nopush {
 		// Marshal the stats to JSON and log.
 		asJSON, err := json.MarshalIndent(&stats, "", "    ")
@@ -113,13 +115,15 @@ func pushStats(session *mgo.Session, stats interface{}) error {
 		return nil
 	}
 
-	if err := mongo.Push(session, stats); err != nil {
+	if err := mongo.Push(session, &stats); err != nil {
 		return fmt.Errorf("error pushing to MongoDB: %s", err)
 	}
 
-	if err := elastic.Push(cliArgs.elasticURL, stats); err != nil {
+	_, err := elastic.Push(cliArgs.elasticURL, stats)
+	if err != nil {
 		return fmt.Errorf("error pushing to ElasticSearch: %s", err)
 	}
+
 	return nil
 }
 
@@ -186,13 +190,22 @@ func main() {
 		log.Fatal("-reverse and -reindex are mutually exclusive")
 	}
 
+	if cliArgs.elasticURL[len(cliArgs.elasticURL)-1] != '/' {
+		log.WithField("url", cliArgs.elasticURL).Fatal("Elastic URL must end in a slash")
+	}
+
 	if cliArgs.reverseToMongo {
 		reverseToMongo(mgoStats)
 		return
 	}
 
-	if cliArgs.reindex {
-		reindex(mgoStats)
+	if cliArgs.resetIndex || cliArgs.reindex {
+		if cliArgs.resetIndex {
+			elastic.ResetIndex(cliArgs.elasticURL)
+		}
+		if cliArgs.reindex {
+			reindex(mgoStats)
+		}
 		return
 	}
 
