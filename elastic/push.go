@@ -9,6 +9,7 @@ import (
 	"net/url"
 
 	log "github.com/sirupsen/logrus"
+	"gopkg.in/mgo.v2/bson"
 )
 
 // sendJSON sends a JSON document to some URL via HTTP.
@@ -97,8 +98,36 @@ func Push(elasticURL string, stats interface{}) error {
 		return nil
 	}
 
-	log.Infof("Pushing to ElasticSearch at %s", postURL)
-	err = sendJSON("stats push: ", "POST", postURL, stats, nil, handleResponse)
+	// Determine some details about the HTTP request.
+	method := "POST"
+	url := postURL
+	switch typed := stats.(type) {
+	case bson.M:
+		// This document comes from MongoDB, and has an ID that we should maintain.
+		objectID := typed["_id"]
+		switch strID := objectID.(type) {
+		case string:
+			if objectID != "" {
+				method = "PUT"
+				url, err = url.Parse(strID)
+				if err != nil {
+					log.WithFields(log.Fields{
+						"_id":      strID,
+						"base_url": postURL.String(),
+					}).Fatal("unable to construct URL for this _id")
+				}
+			}
+		}
+		delete(typed, "_id")
+		// asJSON, _ := json.MarshalIndent(typed, "", "    ")
+		// log.WithFields(log.Fields{
+		// 	"method": method,
+		// 	"url":    url,
+		// }).Debug("writing bson.M object: " + string(asJSON))
+	}
+
+	log.Debug("Pushing to ElasticSearch at %s", postURL)
+	err = sendJSON("stats push: ", method, url, stats, nil, handleResponse)
 	if err != nil {
 		return fmt.Errorf("unable to send JSON: %s", err)
 	}
