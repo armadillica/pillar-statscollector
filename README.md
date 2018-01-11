@@ -11,6 +11,7 @@ ElasticSearch database for storage & analysis.
   `-storage` CLI option; it defaults to the same database as above.
 - A network connection to connect to the Blender Store and collect more statistics.
 - An ElasticSearch server to index collected statistics. Configure with the `-elastic` CLI option.
+  Tested with ElasticSearch 6.1.
 
 
 ## CLI options

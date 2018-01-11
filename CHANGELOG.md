@@ -12,6 +12,7 @@
   reverse of normal operations (where the data is in MongoDB and sent to Elastic), hence the name.
   It is intended be used once to migrate from a version < 2.0, but it can be re-run as the same
   database IDs are used.
+- Targeting ElasticSearch version 6.1.
 
 
 ## Version 1.0.1 (2017-09-19)
