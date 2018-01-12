@@ -8,7 +8,7 @@ import (
 
 // All returns all documents in the stats collection.
 func All(mgoStats *mgo.Session) chan bson.M {
-	log.Info("retrieving all documents in MongoDB")
+	log.Warn("retrieving all documents in MongoDB")
 	c := mgoStats.DB("").C(StatsCollection)
 	ch := make(chan bson.M)
 
@@ -18,11 +18,24 @@ func All(mgoStats *mgo.Session) chan bson.M {
 		result := &bson.M{}
 		seen := 0
 
-		iter := c.Find(bson.M{}).Iter()
+		q := c.Find(bson.M{})
+		count, err := q.Count()
+		if err != nil {
+			log.WithError(err).Fatal("error counting documents in MongoDB")
+		}
+
+		iter := q.Iter()
 		for iter.Next(result) {
 			seen++
 			log.WithField("id", (*result)["_id"]).Debug("found document in MongoDB")
 			ch <- *result
+
+			if seen%100 == 0 {
+				log.WithFields(log.Fields{
+					"seen":  seen,
+					"total": count,
+				}).Warn("retrieving documents from MongoDB")
+			}
 
 			// Create a new object for iter.Next() to use, to ensure that the receiving
 			// end of the channel can do with the received object as they please.
