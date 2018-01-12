@@ -1,7 +1,7 @@
 # Pillar-Statscollector Changelog
 
 
-## Version 2.0 (in development)
+## Version 2.0 (2018-01-12)
 
 - Dropped support for importing data from Grafista.
 - Store statistics in MongoDB before pushing to ElasticSearch.
