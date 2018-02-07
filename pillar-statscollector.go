@@ -13,7 +13,7 @@ import (
 	mgo "gopkg.in/mgo.v2"
 )
 
-const statscollectorVersion = "2.0"
+const statscollectorVersion = "2.1"
 
 var cliArgs struct {
 	version         bool
