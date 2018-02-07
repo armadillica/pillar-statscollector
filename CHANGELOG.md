@@ -1,6 +1,11 @@
 # Pillar-Statscollector Changelog
 
 
+## Version 2.1 (2018-02-07)
+
+- Also collect stats from Blender ID
+
+
 ## Version 2.0 (2018-01-12)
 
 - Dropped support for importing data from Grafista.

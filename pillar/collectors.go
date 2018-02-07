@@ -57,11 +57,16 @@ func CollectStats(session *mgo.Session, before *time.Time) (elastic.Stats, error
 		session.DB("").C("users"),
 	}
 
-	// Collect subscribers in another goroutine, because it needs to do an HTTP call.
+	// Collect subscribers/Blender ID in another goroutine, because they need to do an HTTP call.
 	storeDone := make(chan error)
+	bidDone := make(chan error)
 	go func() {
 		subsErr := c.countSubscriptions("https://store.blender.org/product-counter/?prod=cloud")
 		storeDone <- subsErr
+	}()
+	go func() {
+		bidErr := c.countBlenderID("https://www.blender.org/id/api/stats")
+		bidDone <- bidErr
 	}()
 
 	if err := c.filesTotalCount(); err != nil {
@@ -95,9 +100,12 @@ func CollectStats(session *mgo.Session, before *time.Time) (elastic.Stats, error
 		return stats, fmt.Errorf("countBlenderSyncUsers: %s", err)
 	}
 
-	// Wait for the subscription count to be done.
+	// Wait for the remote calls to be done.
 	if err := <-storeDone; err != nil {
 		log.Warningf("Ignoring error from store: %s", err)
+	}
+	if err := <-bidDone; err != nil {
+		log.Warningf("Ignoring error from Blender ID: %s", err)
 	}
 
 	// Done!

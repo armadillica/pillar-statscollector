@@ -45,6 +45,15 @@ type Stats struct {
 		// and deal with it as missing data.
 		SubscriberCount int `json:"subscriber_count,omitempty" bson:"subscriber_count,omitempty"`
 	} `json:"users" bson:"users"`
+
+	BlenderID *BlenderID `json:"blender_id,omitempty" bson:"blender_id,omitempty"`
+}
+
+// BlenderID models the stats from Blender ID
+type BlenderID struct {
+	ConfirmedEmailCount   int `json:"confirmed_email_count" bson:"confirmed_email_count"`
+	UnconfirmedEmailCount int `json:"unconfirmed_email_count" bson:"unconfirmed_email_count"`
+	TotalCount            int `json:"total_user_count" bson:"total_user_count"`
 }
 
 type postResponse struct {
