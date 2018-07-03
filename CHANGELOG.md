@@ -1,5 +1,9 @@
 # Pillar-Statscollector Changelog
 
+## Version 2.2 (2018-07-03)
+
+- Also collect privacy policy agreement counts from Blender ID.
+
 
 ## Version 2.1 (2018-02-07)
 

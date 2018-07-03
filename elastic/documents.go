@@ -51,9 +51,17 @@ type Stats struct {
 
 // BlenderID models the stats from Blender ID
 type BlenderID struct {
-	ConfirmedEmailCount   int `json:"confirmed_email_count" bson:"confirmed_email_count"`
-	UnconfirmedEmailCount int `json:"unconfirmed_email_count" bson:"unconfirmed_email_count"`
-	TotalCount            int `json:"total_user_count" bson:"total_user_count"`
+	ConfirmedEmailCount   int                    `json:"confirmed_email_count" bson:"confirmed_email_count"`
+	UnconfirmedEmailCount int                    `json:"unconfirmed_email_count" bson:"unconfirmed_email_count"`
+	PrivacyPolicyAgreed   BlenderIDPrivacyPolicy `json:"privacy_policy_agreed" bson:"privacy_policy_agreed"`
+	TotalCount            int                    `json:"total_user_count" bson:"total_user_count"`
+}
+
+// BlenderIDPrivacyPolicy is a subdocument of BlenderID and counts user agreements to the privacy policy.
+type BlenderIDPrivacyPolicy struct {
+	Latest   int `json:"latest"`
+	Obsolete int `json:"obsolete"`
+	Never    int `json:"never"`
 }
 
 type postResponse struct {

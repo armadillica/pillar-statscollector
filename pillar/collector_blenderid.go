@@ -31,6 +31,11 @@ func (c *collector) countBlenderID(blenderIDURL string) error {
 		ConfirmedEmailCount:   blenderIDData.Users.ConfirmedEmailCount,
 		UnconfirmedEmailCount: blenderIDData.Users.UnconfirmedEmailCount,
 		TotalCount:            blenderIDData.Users.TotalCount,
+		PrivacyPolicyAgreed: elastic.BlenderIDPrivacyPolicy{
+			Latest:   blenderIDData.Users.PrivacyPolicyAgreed.Latest,
+			Obsolete: blenderIDData.Users.PrivacyPolicyAgreed.Obsolete,
+			Never:    blenderIDData.Users.PrivacyPolicyAgreed.Never,
+		},
 	}
 	return nil
 }

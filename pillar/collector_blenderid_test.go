@@ -36,8 +36,19 @@ func (s *CollectorBIDTestSuite) TearDownTest(c *check.C) {
 }
 
 func (s *CollectorBIDTestSuite) TestBIDRequestHappy(t *check.C) {
-	responder, err := httpmock.NewJsonResponder(200,
-		blenderIDResponse{blenderIDUsers{31879, 66171, 98050}})
+	resp := blenderIDResponse{
+		Users: blenderIDUsers{
+			ConfirmedEmailCount:   31879,
+			UnconfirmedEmailCount: 66171,
+			TotalCount:            98050,
+			PrivacyPolicyAgreed: &blenderIDPP{
+				Latest:   4,
+				Obsolete: 1,
+				Never:    98045,
+			},
+		},
+	}
+	responder, err := httpmock.NewJsonResponder(200, resp)
 	assert.Nil(t, err)
 	httpmock.RegisterResponder(
 		"GET", "https://www.blender.org/id/api/stats",
@@ -54,6 +65,9 @@ func (s *CollectorBIDTestSuite) TestBIDRequestHappy(t *check.C) {
 	assert.Equal(t, 31879, stats.BlenderID.ConfirmedEmailCount)
 	assert.Equal(t, 66171, stats.BlenderID.UnconfirmedEmailCount)
 	assert.Equal(t, 98050, stats.BlenderID.TotalCount)
+	assert.Equal(t, 4, stats.BlenderID.PrivacyPolicyAgreed.Latest)
+	assert.Equal(t, 1, stats.BlenderID.PrivacyPolicyAgreed.Obsolete)
+	assert.Equal(t, 98045, stats.BlenderID.PrivacyPolicyAgreed.Never)
 }
 
 func (s *CollectorBIDTestSuite) TestBIDRequestUnhappy(t *check.C) {
